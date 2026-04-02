@@ -152,19 +152,19 @@
         const status = document.getElementById('dayStatus');
         
         if (dayState === 'running') {
-            mainBtn.innerText = "⏸ 暂停科研";
+            mainBtn.innerText = "⏸ 暂停一下";
             mainBtn.className = "btn btn-pause";
             finishBtn.style.display = 'inline-block';
-            status.innerText = "🚀 深度科研模式进行中...";
+            status.innerText = "🚀 doing...";
         } else if (dayState === 'paused') {
-            mainBtn.innerText = "▶ 继续科研";
+            mainBtn.innerText = "▶ 继续";
             mainBtn.className = "btn";
             mainBtn.style.background = "var(--success)";
             finishBtn.style.display = 'inline-block';
             status.innerText = "☕ 已暂停（数据已存档）";
             document.getElementById('totalTimer').innerText = formatHMS(dayTotalSec);
         } else {
-            mainBtn.innerText = "开启科研模式";
+            mainBtn.innerText = "开启";
             mainBtn.className = "btn";
             mainBtn.style.background = "var(--success)";
             finishBtn.style.display = 'none';
@@ -240,7 +240,7 @@
     
     function renderLogs() {
         const today = new Date().toISOString().split('T')[0];
-        document.getElementById('logList').innerHTML = logs.filter(l => l.date === today).map(l => `
+        document.getElementById('logList').innerHTML = logs.map(l => `
             <div class="log-item">
                 <div class="log-header"><span style="font-weight:bold;">${l.name}</span><span class="duration-tag">${l.duration} min</span></div>
                 <div style="font-size:0.8rem; color:#888;">[${l.tag}] | ${l.timeRange} <span onclick="deleteLog(${l.id})" style="float:right; cursor:pointer;">&times;</span></div>
