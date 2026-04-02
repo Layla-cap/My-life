@@ -1,24 +1,3 @@
-这是一个非常敏锐的痛点。在目前的 v5.0 代码逻辑中，顶部的全天计时器（仪式感窗口）确实是“一旦开启就停不下来”的，它记录的是从你**早上第一次踏入实验室**到**晚上离开实验室**的“大排档”时间。
-
-但作为博士生，中间肯定会有**午睡、吃饭、甚至导师临时叫你去帮个杂务**等非科研时间。如果大计时器一直走，最后显示“今日科研 12 小时”，数据显然是虚高的，甚至会带来一种虚假的成就感。
-
-我为你优化了逻辑，升级到 **v5.1“心流暂停版”**。
-
-### 本次升级的两个核心变动：
-
-1.  **大计时器支持“暂停”**：现在的“开启全天科研模式”变成了三个状态：**开始**、**暂停**、**继续**。
-    * 当你去吃饭或午睡时，点一下“暂停”，总时间就会停在那。
-    * 回来后再点“继续”，时间会接着走。
-    * 这样你最后得到的“全天总时长”，就是你**真正坐在书桌前/实验台前**的总量。
-2.  **数据互补**：大计时器记录的是“总心流时长”，下面的小任务记录的是“具体产出时长”。两相对比，你就能发现自己有多少时间是在“纯待着”，多少时间是在“高效产出”。
-
----
-
-### 第一步：复制 v5.1 增强版代码
-
-你可以直接全选并替换掉 GitHub 上的 `index.html`。
-
-```html
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
@@ -62,11 +41,11 @@
 
 <div class="main-layout">
     <div class="timer-card">
-        <div style="font-size: 1.1rem; letter-spacing: 3px; opacity: 0.9;">🌍你今天地球online了吗🌍</div>
+        <div style="font-size: 1.1rem; letter-spacing: 3px; opacity: 0.9;">🌍你今天地球Online了吗？🌍</div>
         <div id="totalTimer" class="timer-display">00:00:00</div>
         <div id="timerControls" style="display:flex; justify-content:center; gap:12px;">
-            <button id="dayMainBtn" class="btn" style="background:var(--success); color:white;" onclick="handleDayMain()">来啦？😉</button>
-            <button id="dayFinishBtn" class="btn btn-finish" style="display:none;" onclick="finishDayWork()">See U Tomorrow💗</button>
+            <button id="dayMainBtn" class="btn" style="background:var(--success); color:white;" onclick="handleDayMain()">来啦😉给咱Lisa些！</button>
+            <button id="dayFinishBtn" class="btn btn-finish" style="display:none;" onclick="finishDayWork()">See U Tomorrow！💗</button>
         </div>
         <div id="dayStatus" style="margin-top:12px; font-size:0.85rem; color:#bdc3c7;">尚未开启</div>
     </div>
@@ -311,18 +290,3 @@
 </script>
 </body>
 </html>
-```
-
----
-
-### 第二步：如何使用 v5.1 的新功能？
-
-1.  **开启科研**：每天坐下时，点击 **“开启科研模式”**。背景会变绿。
-2.  **暂停/午休**：当你准备去吃饭、去图书馆借书或者导师找你开会时，点击 **“⏸ 暂停科研”**。你会发现计时器停止了。
-    * *重要：* 哪怕你这时候刷新网页、关掉浏览器，数据依然会锁定在那个暂停的时间点。
-3.  **继续工作**：回来后，点击那个黄色的按钮 **“▶ 继续科研”**，时间会接着之前的秒数继续跳。
-4.  **结束一整天**：当你晚上真的要回家睡觉了，点击 **“结束今日工作”**。它会帮你做最后的结算，并将全天所有状态归零，准备迎接明天的挑战。
-
-
-
-**这种“断点续传”式的计时，能帮你排除掉所有的水分，看到自己最真实的学术产出。去 GitHub 试试看吧！**
