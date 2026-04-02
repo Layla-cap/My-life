@@ -3,89 +3,82 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PhD Life OS | 博士生科研生活系统</title>
+    <title>PhD Academic OS Pro</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        :root { --primary: #2c3e50; --bg: #f8f9fa; --accent: #3498db; }
+        :root { --primary: #2c3e50; --bg: #f4f7f6; --accent: #3498db; }
         body { font-family: 'PingFang SC', system-ui, sans-serif; background: var(--bg); margin: 0; padding: 20px; color: #333; }
-        .container { max-width: 800px; margin: 0 auto; background: white; padding: 30px; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); }
-        header { text-align: center; margin-bottom: 30px; border-bottom: 2px solid #eee; padding-bottom: 20px; }
-        h1 { margin: 0; color: var(--primary); font-size: 1.5rem; }
+        .container { max-width: 900px; margin: 0 auto; background: white; padding: 30px; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); }
         
-        /* 输入区域 */
-        .input-group { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 20px; background: #f0f4f8; padding: 15px; border-radius: 12px; }
+        /* 顶部导航与切换 */
+        .tabs { display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 1px solid #eee; padding-bottom: 10px; }
+        .tab-btn { padding: 8px 16px; border: none; background: none; cursor: pointer; color: #666; font-weight: bold; }
+        .tab-btn.active { color: var(--accent); border-bottom: 2px solid var(--accent); }
+
+        /* 输入区 */
+        .input-group { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 25px; background: #fff; border: 1px dashed #cbd5e0; padding: 15px; border-radius: 12px; }
         input[type="text"] { flex: 1; min-width: 200px; padding: 10px; border: 1px solid #ddd; border-radius: 6px; }
-        select { padding: 10px; border-radius: 6px; border: 1px solid #ddd; background: white; }
-        .btn-add { background: var(--primary); color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: bold; }
+        
+        /* 统计图表区 */
+        #statsContainer { display: none; margin-bottom: 30px; padding: 20px; background: #f8fafc; border-radius: 12px; }
+        .chart-wrapper { max-width: 400px; margin: 0 auto; }
 
         /* 列表展示 */
-        .time-section { margin-top: 30px; }
-        .section-title { font-size: 1.1rem; font-weight: bold; color: #555; border-left: 4px solid var(--accent); padding-left: 10px; margin: 20px 0 10px; }
-        .log-item { display: flex; align-items: center; justify-content: space-between; padding: 12px; border-bottom: 1px solid #eee; transition: 0.2s; }
-        .log-item:hover { background: #fcfcfc; }
-        .log-info { display: flex; align-items: center; gap: 10px; }
-        .time-stamp { color: #999; font-size: 0.85rem; font-family: monospace; }
-        .tag { font-size: 0.75rem; padding: 2px 8px; border-radius: 12px; color: white; font-weight: bold; }
+        .log-item { display: flex; align-items: center; justify-content: space-between; padding: 12px; border-bottom: 1px solid #eee; font-size: 0.95rem; }
+        .tag { font-size: 0.7rem; padding: 2px 8px; border-radius: 10px; color: white; margin: 0 10px; white-space: nowrap; }
+        .date-label { font-size: 0.75rem; color: #a0aec0; min-width: 80px; }
         
-        /* 标签颜色定义 */
-        .tag-学习 { background: #3498db; }
-        .tag-写论文 { background: #e67e22; }
-        .tag-上朝 { background: #9b59b6; }
-        .tag-饮食 { background: #2ecc71; }
-        .tag-LoveMoment { background: #e74c3c; }
-        .tag-Social { background: #1abc9c; }
+        /* 颜色配置 */
+        .tag-学习 { background: #3498db; } .tag-写论文 { background: #e67e22; }
+        .tag-上朝 { background: #9b59b6; } .tag-饮食 { background: #2ecc71; }
+        .tag-LoveMoment { background: #e74c3c; } .tag-Social { background: #1abc9c; }
         .tag-其他 { background: #95a5a6; }
-
-        .delete-btn { color: #ccc; cursor: pointer; font-size: 1.2rem; }
-        .delete-btn:hover { color: #e74c3c; }
-        
-        .empty-state { text-align: center; color: #999; padding: 20px; font-style: italic; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <header>
-        <h1 id="current-date">PhD Life System</h1>
-        <p style="font-size: 0.9rem; color: #666;">记录研究点滴，对抗学术焦虑</p>
+    <header style="text-align:center; margin-bottom:20px;">
+        <h1 id="headerTitle">PhD Life OS</h1>
+        <p id="subTitle">数据驱动科研，感悟沉淀生活</p>
     </header>
 
-    <div class="input-group">
-        <input type="text" id="taskInput" placeholder="写了30分钟论文 / 读了某某文献...">
-        <select id="tagSelect">
-            <option value="学习">📖 学习</option>
-            <option value="写论文">✍️ 写论文</option>
-            <option value="上朝">🏛️ 上朝 (导师见面/开会)</option>
-            <option value="饮食">🥗 饮食</option>
-            <option value="LoveMoment">❤️ Love Moment</option>
-            <option value="Social">☕ Social</option>
-            <option value="其他">🔗 其他</option>
-        </select>
-        <button class="btn-add" onclick="addLog()">记录一下</button>
+    <div class="tabs">
+        <button class="tab-btn active" onclick="switchView('daily')">今日打卡</button>
+        <button class="tab-btn" onclick="switchView('stats')">周/月分析报告</button>
     </div>
 
-    <div id="logDisplay">
-        <div class="time-section">
-            <div class="section-title">☀️ 上午 (08:00 - 12:00)</div>
-            <div id="am-list"></div>
-        </div>
-        <div class="time-section">
-            <div class="section-title">🌤️ 下午 (12:00 - 18:00)</div>
-            <div id="pm-list"></div>
-        </div>
-        <div class="time-section">
-            <div class="section-title">🌙 晚上 (18:00 - 24:00)</div>
-            <div id="night-list"></div>
+    <div id="inputArea">
+        <div class="input-group">
+            <input type="text" id="taskInput" placeholder="写下现在的进展或心情...">
+            <select id="tagSelect" style="padding:10px; border-radius:6px;">
+                <option value="学习">📖 学习</option>
+                <option value="写论文">✍️ 写论文</option>
+                <option value="上朝">🏛️ 上朝</option>
+                <option value="饮食">🥗 饮食</option>
+                <option value="LoveMoment">❤️ Love Moment</option>
+                <option value="Social">☕ Social</option>
+                <option value="其他">🔗 其他</option>
+            </select>
+            <button onclick="addLog()" style="background:var(--primary); color:white; border:none; padding:10px 20px; border-radius:6px; cursor:pointer;">记录</button>
         </div>
     </div>
-    
-    <button onclick="clearAll()" style="margin-top:40px; background:none; border:none; color:#ccc; cursor:pointer; font-size:0.8rem; width:100%;">清空所有历史记录</button>
+
+    <div id="statsContainer">
+        <h3 style="text-align:center;">事务分布分析</h3>
+        <div class="chart-wrapper">
+            <canvas id="myChart"></canvas>
+        </div>
+        <div id="insightText" style="margin-top:20px; font-size:0.9rem; color:#666; text-align:center;"></div>
+    </div>
+
+    <div id="logList"></div>
 </div>
 
 <script>
-    // 页面初始化：显示日期并加载数据
-    document.getElementById('current-date').innerText = new Date().toLocaleDateString('zh-CN', {month:'long', day:'numeric', weekday:'long'});
-    let logs = JSON.parse(localStorage.getItem('phd_logs')) || [];
-    renderLogs();
+    let logs = JSON.parse(localStorage.getItem('phd_logs_pro')) || [];
+    let currentView = 'daily';
+    let myChart = null;
 
     function addLog() {
         const content = document.getElementById('taskInput').value;
@@ -93,61 +86,90 @@
         if (!content) return;
 
         const now = new Date();
-        const timeStr = now.getHours().toString().padStart(2, '0') + ":" + now.getMinutes().toString().padStart(2, '0');
-        const hour = now.getHours();
-
         const newLog = {
             id: Date.now(),
+            date: now.toISOString().split('T')[0], // YYYY-MM-DD
+            time: now.getHours().toString().padStart(2, '0') + ":" + now.getMinutes().toString().padStart(2, '0'),
+            timestamp: now.getTime(),
             content: content,
-            tag: tag,
-            time: timeStr,
-            hour: hour
+            tag: tag
         };
 
-        logs.unshift(newLog); // 新记录放在最前面
-        localStorage.setItem('phd_logs', JSON.stringify(logs));
-        document.getElementById('taskInput').value = ''; // 清空输入框
-        renderLogs();
+        logs.unshift(newLog);
+        localStorage.setItem('phd_logs_pro', JSON.stringify(logs));
+        document.getElementById('taskInput').value = '';
+        render();
     }
 
-    function renderLogs() {
-        const lists = { am: '', pm: '', night: '' };
-        
-        logs.forEach(log => {
-            const html = `
-                <div class="log-item">
-                    <div class="log-info">
-                        <span class="time-stamp">${log.time}</span>
-                        <span class="tag tag-${log.tag}">${log.tag}</span>
-                        <span>${log.content}</span>
-                    </div>
-                    <span class="delete-btn" onclick="deleteLog(${log.id})">&times;</span>
-                </div>
-            `;
-            if (log.hour >= 8 && log.hour < 12) lists.am += html;
-            else if (log.hour >= 12 && log.hour < 18) lists.pm += html;
-            else lists.night += html;
-        });
+    function render() {
+        const listEl = document.getElementById('logList');
+        const today = new Date().toISOString().split('T')[0];
+        let displayLogs = logs;
 
-        document.getElementById('am-list').innerHTML = lists.am || '<div class="empty-state">暂无记录</div>';
-        document.getElementById('pm-list').innerHTML = lists.pm || '<div class="empty-state">暂无记录</div>';
-        document.getElementById('night-list').innerHTML = lists.night || '<div class="empty-state">暂无记录</div>';
+        if (currentView === 'daily') {
+            displayLogs = logs.filter(l => l.date === today);
+            document.getElementById('inputArea').style.display = 'block';
+            document.getElementById('statsContainer').style.display = 'none';
+        } else {
+            document.getElementById('inputArea').style.display = 'none';
+            document.getElementById('statsContainer').style.display = 'block';
+            updateChart();
+        }
+
+        listEl.innerHTML = displayLogs.map(log => `
+            <div class="log-item">
+                <div style="display:flex; align-items:center;">
+                    <span class="date-label">${log.date === today ? '今日' : log.date} ${log.time}</span>
+                    <span class="tag tag-${log.tag}">${log.tag}</span>
+                    <span>${log.content}</span>
+                </div>
+                <span style="color:#ccc; cursor:pointer;" onclick="deleteLog(${log.id})">&times;</span>
+            </div>
+        `).join('') || '<p style="text-align:center; color:#999; margin:40px;">暂无数据，开始记录你的第一天吧！</p>';
+    }
+
+    function updateChart() {
+        const counts = {};
+        // 仅分析最近30天的数据
+        const thirtyDaysAgo = Date.now() - 30 * 24 * 60 * 60 * 1000;
+        const relevantLogs = logs.filter(l => l.timestamp > thirtyDaysAgo);
+        
+        relevantLogs.forEach(l => counts[l.tag] = (counts[l.tag] || 0) + 1);
+
+        const ctx = document.getElementById('myChart').getContext('2d');
+        if (myChart) myChart.destroy();
+        
+        myChart = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: Object.keys(counts),
+                datasets: [{
+                    data: Object.values(counts),
+                    backgroundColor: ['#3498db', '#e67e22', '#9b59b6', '#2ecc71', '#e74c3c', '#1abc9c', '#95a5a6']
+                }]
+            },
+            options: { plugins: { legend: { position: 'bottom' } } }
+        });
+        
+        const topTag = Object.keys(counts).reduce((a, b) => counts[a] > counts[b] ? a : b, '无');
+        document.getElementById('insightText').innerText = `近30天你记录最频繁的活动是：${topTag}。继续保持平衡哦！`;
+    }
+
+    function switchView(view) {
+        currentView = view;
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.classList.toggle('active', btn.innerText.includes(view === 'daily' ? '今日' : '分析'));
+        });
+        render();
     }
 
     function deleteLog(id) {
-        logs = logs.filter(log => log.id !== id);
-        localStorage.setItem('phd_logs', JSON.stringify(logs));
-        renderLogs();
+        logs = logs.filter(l => l.id !== id);
+        localStorage.setItem('phd_logs_pro', JSON.stringify(logs));
+        render();
     }
 
-    function clearAll() {
-        if(confirm("确定要清空所有记录吗？")) {
-            localStorage.removeItem('phd_logs');
-            logs = [];
-            renderLogs();
-        }
-    }
+    render();
 </script>
-
 </body>
 </html>
