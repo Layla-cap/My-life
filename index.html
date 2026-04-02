@@ -3,62 +3,151 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PHD Life System | 博士生生活系统</title>
+    <title>PhD Life OS | 博士生科研生活系统</title>
     <style>
-        :root { --primary: #4a5568; --bg: #f7fafc; --accent-am: #f6ad55; --accent-pm: #4fd1c5; --accent-night: #9f7aea; }
-        body { font-family: 'Helvetica Neue', Arial, sans-serif; background: var(--bg); color: #2d3748; line-height: 1.6; padding: 20px; }
-        .container { max-width: 700px; margin: 0 auto; background: white; padding: 40px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
-        header { border-bottom: 2px solid #edf2f7; margin-bottom: 30px; padding-bottom: 10px; }
-        h1 { font-size: 1.8rem; letter-spacing: -1px; }
-        .time-block { margin-bottom: 30px; padding: 20px; border-radius: 12px; border-left: 6px solid; }
-        .am { border-left-color: var(--accent-am); background: #fffaf0; }
-        .pm { border-left-color: var(--accent-pm); background: #e6fffa; }
-        .night { border-left-color: var(--accent-night); background: #faf5ff; }
-        h3 { margin-top: 0; display: flex; align-items: center; }
-        input[type="checkbox"] { transform: scale(1.5); margin-right: 15px; cursor: pointer; }
-        textarea { width: 100%; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px; margin-top: 10px; box-sizing: border-box; font-size: 14px; min-height: 80px; resize: vertical; }
-        button { background: var(--primary); color: white; border: none; padding: 12px 25px; border-radius: 8px; font-weight: bold; cursor: pointer; width: 100%; transition: opacity 0.2s; }
-        button:hover { opacity: 0.9; }
-        .footer { text-align: center; margin-top: 30px; font-size: 0.8rem; color: #a0aec0; }
+        :root { --primary: #2c3e50; --bg: #f8f9fa; --accent: #3498db; }
+        body { font-family: 'PingFang SC', system-ui, sans-serif; background: var(--bg); margin: 0; padding: 20px; color: #333; }
+        .container { max-width: 800px; margin: 0 auto; background: white; padding: 30px; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); }
+        header { text-align: center; margin-bottom: 30px; border-bottom: 2px solid #eee; padding-bottom: 20px; }
+        h1 { margin: 0; color: var(--primary); font-size: 1.5rem; }
+        
+        /* 输入区域 */
+        .input-group { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 20px; background: #f0f4f8; padding: 15px; border-radius: 12px; }
+        input[type="text"] { flex: 1; min-width: 200px; padding: 10px; border: 1px solid #ddd; border-radius: 6px; }
+        select { padding: 10px; border-radius: 6px; border: 1px solid #ddd; background: white; }
+        .btn-add { background: var(--primary); color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: bold; }
+
+        /* 列表展示 */
+        .time-section { margin-top: 30px; }
+        .section-title { font-size: 1.1rem; font-weight: bold; color: #555; border-left: 4px solid var(--accent); padding-left: 10px; margin: 20px 0 10px; }
+        .log-item { display: flex; align-items: center; justify-content: space-between; padding: 12px; border-bottom: 1px solid #eee; transition: 0.2s; }
+        .log-item:hover { background: #fcfcfc; }
+        .log-info { display: flex; align-items: center; gap: 10px; }
+        .time-stamp { color: #999; font-size: 0.85rem; font-family: monospace; }
+        .tag { font-size: 0.75rem; padding: 2px 8px; border-radius: 12px; color: white; font-weight: bold; }
+        
+        /* 标签颜色定义 */
+        .tag-学习 { background: #3498db; }
+        .tag-写论文 { background: #e67e22; }
+        .tag-上朝 { background: #9b59b6; }
+        .tag-饮食 { background: #2ecc71; }
+        .tag-LoveMoment { background: #e74c3c; }
+        .tag-Social { background: #1abc9c; }
+        .tag-其他 { background: #95a5a6; }
+
+        .delete-btn { color: #ccc; cursor: pointer; font-size: 1.2rem; }
+        .delete-btn:hover { color: #e74c3c; }
+        
+        .empty-state { text-align: center; color: #999; padding: 20px; font-style: italic; }
     </style>
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1>Academic Daily Log</h1>
-            <p id="date-display"></p>
-        </header>
 
-        <div class="time-block am">
-            <h3>☀️ Morning (上午)</h3>
-            <label><input type="checkbox"> 文献/实验/核心产出</label>
-            <textarea placeholder="在这里记录早晨的灵感或突发奇想..."></textarea>
-        </div>
+<div class="container">
+    <header>
+        <h1 id="current-date">PhD Life System</h1>
+        <p style="font-size: 0.9rem; color: #666;">记录研究点滴，对抗学术焦虑</p>
+    </header>
 
-        <div class="time-block pm">
-            <h3>🌤️ Afternoon (下午)</h3>
-            <label><input type="checkbox"> 数据分析/学术琐事/写作</label>
-            <textarea placeholder="下午的进展顺利吗？遇到了什么困难？"></textarea>
-        </div>
-
-        <div class="time-block night">
-            <h3>🌙 Evening (晚上)</h3>
-            <label><input type="checkbox"> 运动/阅读/复盘感悟</label>
-            <textarea placeholder="给自己一个安静的时刻，写下今日的心情..."></textarea>
-        </div>
-
-        <button onclick="saveLog()">完成今日打卡 & 保存</button>
-        <div class="footer">系统已部署 - 专注研究，享受生活</div>
+    <div class="input-group">
+        <input type="text" id="taskInput" placeholder="写了30分钟论文 / 读了某某文献...">
+        <select id="tagSelect">
+            <option value="学习">📖 学习</option>
+            <option value="写论文">✍️ 写论文</option>
+            <option value="上朝">🏛️ 上朝 (导师见面/开会)</option>
+            <option value="饮食">🥗 饮食</option>
+            <option value="LoveMoment">❤️ Love Moment</option>
+            <option value="Social">☕ Social</option>
+            <option value="其他">🔗 其他</option>
+        </select>
+        <button class="btn-add" onclick="addLog()">记录一下</button>
     </div>
 
-    <script>
-        // 显示当前日期
-        document.getElementById('date-display').innerText = new Date().toLocaleDateString('zh-CN', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+    <div id="logDisplay">
+        <div class="time-section">
+            <div class="section-title">☀️ 上午 (08:00 - 12:00)</div>
+            <div id="am-list"></div>
+        </div>
+        <div class="time-section">
+            <div class="section-title">🌤️ 下午 (12:00 - 18:00)</div>
+            <div id="pm-list"></div>
+        </div>
+        <div class="time-section">
+            <div class="section-title">🌙 晚上 (18:00 - 24:00)</div>
+            <div id="night-list"></div>
+        </div>
+    </div>
+    
+    <button onclick="clearAll()" style="margin-top:40px; background:none; border:none; color:#ccc; cursor:pointer; font-size:0.8rem; width:100%;">清空所有历史记录</button>
+</div>
+
+<script>
+    // 页面初始化：显示日期并加载数据
+    document.getElementById('current-date').innerText = new Date().toLocaleDateString('zh-CN', {month:'long', day:'numeric', weekday:'long'});
+    let logs = JSON.parse(localStorage.getItem('phd_logs')) || [];
+    renderLogs();
+
+    function addLog() {
+        const content = document.getElementById('taskInput').value;
+        const tag = document.getElementById('tagSelect').value;
+        if (!content) return;
+
+        const now = new Date();
+        const timeStr = now.getHours().toString().padStart(2, '0') + ":" + now.getMinutes().toString().padStart(2, '0');
+        const hour = now.getHours();
+
+        const newLog = {
+            id: Date.now(),
+            content: content,
+            tag: tag,
+            time: timeStr,
+            hour: hour
+        };
+
+        logs.unshift(newLog); // 新记录放在最前面
+        localStorage.setItem('phd_logs', JSON.stringify(logs));
+        document.getElementById('taskInput').value = ''; // 清空输入框
+        renderLogs();
+    }
+
+    function renderLogs() {
+        const lists = { am: '', pm: '', night: '' };
         
-        function saveLog() {
-            alert('打卡成功！内容已记录在浏览器缓存中。\n（如需永久同步建议配合 Notion 使用）');
-            // 这里可以扩展将数据保存到 localstorage 的代码
+        logs.forEach(log => {
+            const html = `
+                <div class="log-item">
+                    <div class="log-info">
+                        <span class="time-stamp">${log.time}</span>
+                        <span class="tag tag-${log.tag}">${log.tag}</span>
+                        <span>${log.content}</span>
+                    </div>
+                    <span class="delete-btn" onclick="deleteLog(${log.id})">&times;</span>
+                </div>
+            `;
+            if (log.hour >= 8 && log.hour < 12) lists.am += html;
+            else if (log.hour >= 12 && log.hour < 18) lists.pm += html;
+            else lists.night += html;
+        });
+
+        document.getElementById('am-list').innerHTML = lists.am || '<div class="empty-state">暂无记录</div>';
+        document.getElementById('pm-list').innerHTML = lists.pm || '<div class="empty-state">暂无记录</div>';
+        document.getElementById('night-list').innerHTML = lists.night || '<div class="empty-state">暂无记录</div>';
+    }
+
+    function deleteLog(id) {
+        logs = logs.filter(log => log.id !== id);
+        localStorage.setItem('phd_logs', JSON.stringify(logs));
+        renderLogs();
+    }
+
+    function clearAll() {
+        if(confirm("确定要清空所有记录吗？")) {
+            localStorage.removeItem('phd_logs');
+            logs = [];
+            renderLogs();
         }
-    </script>
+    }
+</script>
+
 </body>
 </html>
