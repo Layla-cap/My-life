@@ -3,173 +3,198 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PhD Academic OS Pro</title>
+    <title>PhD Life OS v3.0 | 数字化科研助理</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        :root { --primary: #2c3e50; --bg: #f4f7f6; --accent: #3498db; }
+        :root { --primary: #2c3e50; --bg: #f0f2f5; --accent: #3498db; --note-bg: #fef9c3; }
         body { font-family: 'PingFang SC', system-ui, sans-serif; background: var(--bg); margin: 0; padding: 20px; color: #333; }
-        .container { max-width: 900px; margin: 0 auto; background: white; padding: 30px; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); }
+        .main-layout { display: flex; max-width: 1100px; margin: 0 auto; gap: 20px; flex-wrap: wrap; }
         
-        /* 顶部导航与切换 */
-        .tabs { display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 1px solid #eee; padding-bottom: 10px; }
-        .tab-btn { padding: 8px 16px; border: none; background: none; cursor: pointer; color: #666; font-weight: bold; }
-        .tab-btn.active { color: var(--accent); border-bottom: 2px solid var(--accent); }
+        /* 左侧打卡区 */
+        .log-container { flex: 2; min-width: 350px; background: white; padding: 25px; border-radius: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+        /* 右侧便条区 */
+        .note-container { flex: 1; min-width: 280px; background: var(--note-bg); padding: 20px; border-radius: 16px; box-shadow: 2px 5px 15px rgba(0,0,0,0.1); border: 1px solid #fde68a; height: fit-content; position: sticky; top: 20px; }
+        
+        .tabs { display: flex; gap: 10px; margin-bottom: 15px; border-bottom: 1px solid #eee; }
+        .tab-btn { padding: 8px 12px; border: none; background: none; cursor: pointer; font-size: 0.9rem; color: #666; }
+        .tab-btn.active { color: var(--accent); border-bottom: 2px solid var(--accent); font-weight: bold; }
 
-        /* 输入区 */
-        .input-group { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 25px; background: #fff; border: 1px dashed #cbd5e0; padding: 15px; border-radius: 12px; }
-        input[type="text"] { flex: 1; min-width: 200px; padding: 10px; border: 1px solid #ddd; border-radius: 6px; }
+        .input-group { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; padding: 15px; background: #f8fafc; border-radius: 10px; }
+        .row { display: flex; gap: 10px; }
+        input, select { padding: 10px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; }
         
-        /* 统计图表区 */
-        #statsContainer { display: none; margin-bottom: 30px; padding: 20px; background: #f8fafc; border-radius: 12px; }
-        .chart-wrapper { max-width: 400px; margin: 0 auto; }
+        /* 便条列表样式 */
+        .todo-input { width: 100%; border: none; background: transparent; border-bottom: 1px solid #d1d5db; margin-bottom: 15px; padding: 5px 0; outline: none; }
+        .todo-item { display: flex; align-items: center; justify-content: space-between; padding: 8px 0; border-bottom: 1px dashed #d1d5db; font-size: 0.9rem; }
+        .todo-text { cursor: pointer; flex: 1; }
+        .done { text-decoration: line-through; color: #9ca3af; }
 
-        /* 列表展示 */
-        .log-item { display: flex; align-items: center; justify-content: space-between; padding: 12px; border-bottom: 1px solid #eee; font-size: 0.95rem; }
-        .tag { font-size: 0.7rem; padding: 2px 8px; border-radius: 10px; color: white; margin: 0 10px; white-space: nowrap; }
-        .date-label { font-size: 0.75rem; color: #a0aec0; min-width: 80px; }
-        
-        /* 颜色配置 */
+        /* 打卡项样式 */
+        .log-item { padding: 10px 0; border-bottom: 1px solid #f3f4f6; display: flex; align-items: center; justify-content: space-between; font-size: 0.9rem; }
+        .tag { font-size: 10px; padding: 2px 6px; border-radius: 4px; color: white; margin: 0 8px; }
         .tag-学习 { background: #3498db; } .tag-写论文 { background: #e67e22; }
         .tag-上朝 { background: #9b59b6; } .tag-饮食 { background: #2ecc71; }
         .tag-LoveMoment { background: #e74c3c; } .tag-Social { background: #1abc9c; }
-        .tag-其他 { background: #95a5a6; }
+        .tag-报销琐事 { background: #64748b; } .tag-摸鱼 { background: #94a3b8; }
+
+        @media (max-width: 768px) { .main-layout { flex-direction: column; } .note-container { position: static; } }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <header style="text-align:center; margin-bottom:20px;">
-        <h1 id="headerTitle">PhD Life OS</h1>
-        <p id="subTitle">数据驱动科研，感悟沉淀生活</p>
-    </header>
+<div class="main-layout">
+    <div class="log-container">
+        <header style="margin-bottom:20px;">
+            <h2 id="headerDate" style="margin:0; color:var(--primary);">PhD Daily Log</h2>
+            <div class="tabs">
+                <button class="tab-btn active" onclick="switchView('daily')">今日追踪</button>
+                <button class="tab-btn" onclick="switchView('stats')">月度分析</button>
+            </div>
+        </header>
 
-    <div class="tabs">
-        <button class="tab-btn active" onclick="switchView('daily')">今日打卡</button>
-        <button class="tab-btn" onclick="switchView('stats')">周/月分析报告</button>
-    </div>
-
-    <div id="inputArea">
-        <div class="input-group">
-            <input type="text" id="taskInput" placeholder="写下现在的进展或心情...">
-            <select id="tagSelect" style="padding:10px; border-radius:6px;">
-                <option value="学习">📖 学习</option>
-                <option value="写论文">✍️ 写论文</option>
-                <option value="上朝">🏛️ 上朝</option>
-                <option value="饮食">🥗 饮食</option>
-                <option value="LoveMoment">❤️ Love Moment</option>
-                <option value="Social">☕ Social</option>
-                <option value="其他">🔗 其他</option>
-            </select>
-            <button onclick="addLog()" style="background:var(--primary); color:white; border:none; padding:10px 20px; border-radius:6px; cursor:pointer;">记录</button>
+        <div id="inputSection">
+            <div class="input-group">
+                <input type="text" id="taskInput" placeholder="刚才干了什么？（如：清理了10个骨标本）">
+                <div class="row">
+                    <select id="tagSelect" style="flex:1">
+                        <option value="学习">📖 学习/读文献</option>
+                        <option value="写论文">✍️ 写论文/跑数据</option>
+                        <option value="上朝">🏛️ 上朝/导师见面</option>
+                        <option value="报销琐事">📑 报销/行政琐事</option>
+                        <option value="饮食">🥗 饮食</option>
+                        <option value="LoveMoment">❤️ Love Moment</option>
+                        <option value="Social">☕ Social</option>
+                        <option value="摸鱼">☕ 摸鱼/休息</option>
+                    </select>
+                    <button onclick="addLog()" style="background:var(--primary); color:white; border:none; padding:10px 20px; border-radius:6px; cursor:pointer;">打卡</button>
+                </div>
+            </div>
         </div>
-    </div>
 
-    <div id="statsContainer">
-        <h3 style="text-align:center;">事务分布分析</h3>
-        <div class="chart-wrapper">
-            <canvas id="myChart"></canvas>
+        <div id="statsSection" style="display:none; text-align:center;">
+            <canvas id="myChart" style="max-height:250px; margin-bottom:20px;"></canvas>
         </div>
-        <div id="insightText" style="margin-top:20px; font-size:0.9rem; color:#666; text-align:center;"></div>
+
+        <div id="logList"></div>
     </div>
 
-    <div id="logList"></div>
+    <div class="note-container">
+        <h3 style="margin-top:0; font-size:1.1rem;">📌 待办 & 灵感便条</h3>
+        <input type="text" id="todoInput" class="todo-input" placeholder="+ 添加一条待办，按回车保存..." onkeypress="if(event.keyCode==13) addTodo()">
+        <div id="todoList"></div>
+        <p style="font-size:0.7rem; color:#92400e; margin-top:20px; opacity:0.7;">* 点击文字标记完成，点击叉号删除</p>
+    </div>
 </div>
 
 <script>
-    let logs = JSON.parse(localStorage.getItem('phd_logs_pro')) || [];
+    let logs = JSON.parse(localStorage.getItem('phd_logs_v3')) || [];
+    let todos = JSON.parse(localStorage.getItem('phd_todos_v3')) || [];
     let currentView = 'daily';
     let myChart = null;
 
+    // --- 打卡逻辑 ---
     function addLog() {
         const content = document.getElementById('taskInput').value;
         const tag = document.getElementById('tagSelect').value;
         if (!content) return;
-
         const now = new Date();
-        const newLog = {
+        logs.unshift({
             id: Date.now(),
-            date: now.toISOString().split('T')[0], // YYYY-MM-DD
+            date: now.toISOString().split('T')[0],
             time: now.getHours().toString().padStart(2, '0') + ":" + now.getMinutes().toString().padStart(2, '0'),
             timestamp: now.getTime(),
-            content: content,
-            tag: tag
-        };
-
-        logs.unshift(newLog);
-        localStorage.setItem('phd_logs_pro', JSON.stringify(logs));
+            content: content, tag: tag
+        });
+        localStorage.setItem('phd_logs_v3', JSON.stringify(logs));
         document.getElementById('taskInput').value = '';
         render();
     }
 
+    // --- 便条逻辑 ---
+    function addTodo() {
+        const input = document.getElementById('todoInput');
+        if (!input.value) return;
+        todos.unshift({ id: Date.now(), text: input.value, done: false });
+        localStorage.setItem('phd_todos_v3', JSON.stringify(todos));
+        input.value = '';
+        renderTodos();
+    }
+
+    function toggleTodo(id) {
+        todos = todos.map(t => t.id === id ? {...t, done: !t.done} : t);
+        localStorage.setItem('phd_todos_v3', JSON.stringify(todos));
+        renderTodos();
+    }
+
+    function deleteTodo(id) {
+        todos = todos.filter(t => t.id !== id);
+        localStorage.setItem('phd_todos_v3', JSON.stringify(todos));
+        renderTodos();
+    }
+
+    function renderTodos() {
+        const list = document.getElementById('todoList');
+        list.innerHTML = todos.map(t => `
+            <div class="todo-item">
+                <span class="todo-text ${t.done?'done':''}" onclick="toggleTodo(${t.id})">${t.text}</span>
+                <span style="cursor:pointer; margin-left:10px; color:#92400e" onclick="deleteTodo(${t.id})">&times;</span>
+            </div>
+        `).join('');
+    }
+
+    // --- 渲染与视图控制 ---
     function render() {
         const listEl = document.getElementById('logList');
         const today = new Date().toISOString().split('T')[0];
-        let displayLogs = logs;
-
-        if (currentView === 'daily') {
-            displayLogs = logs.filter(l => l.date === today);
-            document.getElementById('inputArea').style.display = 'block';
-            document.getElementById('statsContainer').style.display = 'none';
-        } else {
-            document.getElementById('inputArea').style.display = 'none';
-            document.getElementById('statsContainer').style.display = 'block';
-            updateChart();
-        }
-
+        let displayLogs = (currentView === 'daily') ? logs.filter(l => l.date === today) : logs;
+        
         listEl.innerHTML = displayLogs.map(log => `
             <div class="log-item">
-                <div style="display:flex; align-items:center;">
-                    <span class="date-label">${log.date === today ? '今日' : log.date} ${log.time}</span>
+                <div>
+                    <span style="color:#999; font-size:0.75rem;">${log.time}</span>
                     <span class="tag tag-${log.tag}">${log.tag}</span>
                     <span>${log.content}</span>
                 </div>
-                <span style="color:#ccc; cursor:pointer;" onclick="deleteLog(${log.id})">&times;</span>
+                <span style="color:#eee; cursor:pointer;" onclick="deleteLog(${log.id})">&times;</span>
             </div>
-        `).join('') || '<p style="text-align:center; color:#999; margin:40px;">暂无数据，开始记录你的第一天吧！</p>';
-    }
-
-    function updateChart() {
-        const counts = {};
-        // 仅分析最近30天的数据
-        const thirtyDaysAgo = Date.now() - 30 * 24 * 60 * 60 * 1000;
-        const relevantLogs = logs.filter(l => l.timestamp > thirtyDaysAgo);
+        `).join('') || '<p style="text-align:center; color:#ccc;">今日暂无打卡</p>';
         
-        relevantLogs.forEach(l => counts[l.tag] = (counts[l.tag] || 0) + 1);
-
-        const ctx = document.getElementById('myChart').getContext('2d');
-        if (myChart) myChart.destroy();
-        
-        myChart = new Chart(ctx, {
-            type: 'doughnut',
-            data: {
-                labels: Object.keys(counts),
-                datasets: [{
-                    data: Object.values(counts),
-                    backgroundColor: ['#3498db', '#e67e22', '#9b59b6', '#2ecc71', '#e74c3c', '#1abc9c', '#95a5a6']
-                }]
-            },
-            options: { plugins: { legend: { position: 'bottom' } } }
-        });
-        
-        const topTag = Object.keys(counts).reduce((a, b) => counts[a] > counts[b] ? a : b, '无');
-        document.getElementById('insightText').innerText = `近30天你记录最频繁的活动是：${topTag}。继续保持平衡哦！`;
-    }
-
-    function switchView(view) {
-        currentView = view;
-        document.querySelectorAll('.tab-btn').forEach(btn => {
-            btn.classList.toggle('active', btn.innerText.includes(view === 'daily' ? '今日' : '分析'));
-        });
-        render();
+        if(currentView === 'stats') updateChart();
     }
 
     function deleteLog(id) {
         logs = logs.filter(l => l.id !== id);
-        localStorage.setItem('phd_logs_pro', JSON.stringify(logs));
+        localStorage.setItem('phd_logs_v3', JSON.stringify(logs));
         render();
     }
 
+    function switchView(view) {
+        currentView = view;
+        document.getElementById('inputSection').style.display = (view === 'daily' ? 'block' : 'none');
+        document.getElementById('statsSection').style.display = (view === 'stats' ? 'block' : 'none');
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.innerText.includes(view==='daily'?'今日':'分析')));
+        render();
+    }
+
+    function updateChart() {
+        const counts = {};
+        logs.forEach(l => counts[l.tag] = (counts[l.tag] || 0) + 1);
+        const ctx = document.getElementById('myChart').getContext('2d');
+        if (myChart) myChart.destroy();
+        myChart = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: Object.keys(counts),
+                datasets: [{ data: Object.values(counts), backgroundColor: ['#3498db','#e67e22','#9b59b6','#2ecc71','#e74c3c','#1abc9c','#64748b','#94a3b8'] }]
+            },
+            options: { plugins: { legend: { position: 'bottom', labels: { boxWidth: 12 } } } }
+        });
+    }
+
+    // 初始化
+    document.getElementById('headerDate').innerText = new Date().toLocaleDateString('zh-CN', {month:'short', day:'numeric', weekday:'short'});
     render();
+    renderTodos();
 </script>
 </body>
 </html>
