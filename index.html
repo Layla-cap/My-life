@@ -3,75 +3,80 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PhD Life OS v3.0 | 数字化科研助理</title>
+    <title>PhD Life OS v4.0 | 仪式感科研系统</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        :root { --primary: #2c3e50; --bg: #f0f2f5; --accent: #3498db; --note-bg: #fef9c3; }
+        :root { --primary: #2c3e50; --bg: #f0f2f5; --accent: #3498db; --note-bg: #fef9c3; --success: #27ae60; --danger: #e74c3c; }
         body { font-family: 'PingFang SC', system-ui, sans-serif; background: var(--bg); margin: 0; padding: 20px; color: #333; }
         .main-layout { display: flex; max-width: 1100px; margin: 0 auto; gap: 20px; flex-wrap: wrap; }
         
-        /* 左侧打卡区 */
+        /* 顶部仪式感窗口 */
+        .timer-card { width: 100%; background: linear-gradient(135deg, #2c3e50, #4a5568); color: white; padding: 25px; border-radius: 16px; margin-bottom: 20px; text-align: center; box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
+        .timer-display { font-size: 2.5rem; font-family: monospace; margin: 10px 0; font-weight: bold; }
+        .timer-btns { display: flex; justify-content: center; gap: 15px; }
+        .btn { padding: 10px 25px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; transition: 0.3s; }
+        .btn-start { background: var(--success); color: white; }
+        .btn-stop { background: var(--danger); color: white; display: none; }
+
+        /* 布局容器 */
         .log-container { flex: 2; min-width: 350px; background: white; padding: 25px; border-radius: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
-        /* 右侧便条区 */
-        .note-container { flex: 1; min-width: 280px; background: var(--note-bg); padding: 20px; border-radius: 16px; box-shadow: 2px 5px 15px rgba(0,0,0,0.1); border: 1px solid #fde68a; height: fit-content; position: sticky; top: 20px; }
+        .note-container { flex: 1; min-width: 280px; background: var(--note-bg); padding: 20px; border-radius: 16px; box-shadow: 2px 5px 15px rgba(0,0,0,0.1); height: fit-content; position: sticky; top: 20px; }
         
         .tabs { display: flex; gap: 10px; margin-bottom: 15px; border-bottom: 1px solid #eee; }
         .tab-btn { padding: 8px 12px; border: none; background: none; cursor: pointer; font-size: 0.9rem; color: #666; }
         .tab-btn.active { color: var(--accent); border-bottom: 2px solid var(--accent); font-weight: bold; }
 
         .input-group { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; padding: 15px; background: #f8fafc; border-radius: 10px; }
-        .row { display: flex; gap: 10px; }
-        input, select { padding: 10px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; }
+        input, select { padding: 10px; border: 1px solid #ddd; border-radius: 6px; }
         
-        /* 便条列表样式 */
-        .todo-input { width: 100%; border: none; background: transparent; border-bottom: 1px solid #d1d5db; margin-bottom: 15px; padding: 5px 0; outline: none; }
-        .todo-item { display: flex; align-items: center; justify-content: space-between; padding: 8px 0; border-bottom: 1px dashed #d1d5db; font-size: 0.9rem; }
-        .todo-text { cursor: pointer; flex: 1; }
-        .done { text-decoration: line-through; color: #9ca3af; }
-
-        /* 打卡项样式 */
-        .log-item { padding: 10px 0; border-bottom: 1px solid #f3f4f6; display: flex; align-items: center; justify-content: space-between; font-size: 0.9rem; }
-        .tag { font-size: 10px; padding: 2px 6px; border-radius: 4px; color: white; margin: 0 8px; }
+        .log-item { padding: 12px 0; border-bottom: 1px solid #f3f4f6; display: flex; align-items: center; justify-content: space-between; font-size: 0.9rem; }
+        .tag { font-size: 10px; padding: 2px 6px; border-radius: 4px; color: white; margin-right: 8px; }
         .tag-学习 { background: #3498db; } .tag-写论文 { background: #e67e22; }
-        .tag-上朝 { background: #9b59b6; } .tag-饮食 { background: #2ecc71; }
-        .tag-LoveMoment { background: #e74c3c; } .tag-Social { background: #1abc9c; }
-        .tag-报销琐事 { background: #64748b; } .tag-摸鱼 { background: #94a3b8; }
-
-        @media (max-width: 768px) { .main-layout { flex-direction: column; } .note-container { position: static; } }
+        .tag-上朝 { background: #9b59b6; } .tag-系统记录 { background: #2c3e50; }
+        
+        .todo-item { display: flex; align-items: center; justify-content: space-between; padding: 8px 0; border-bottom: 1px dashed #d1d5db; }
+        .done { text-decoration: line-through; color: #9ca3af; }
     </style>
 </head>
 <body>
 
 <div class="main-layout">
+    <div class="timer-card">
+        <div style="font-size: 0.9rem; opacity: 0.8;">今日科研深度模式</div>
+        <div id="timerDisplay" class="timer-display">00:00:00</div>
+        <div class="timer-btns">
+            <button id="startBtn" class="btn btn-start" onclick="startWork()">🚀 开启科研时刻</button>
+            <button id="stopBtn" class="btn btn-stop" onclick="stopWork()">🏁 结束工作并存档</button>
+        </div>
+        <div id="workStatus" style="margin-top: 10px; font-size: 0.8rem;">未开始</div>
+    </div>
+
     <div class="log-container">
-        <header style="margin-bottom:20px;">
-            <h2 id="headerDate" style="margin:0; color:var(--primary);">PhD Daily Log</h2>
-            <div class="tabs">
-                <button class="tab-btn active" onclick="switchView('daily')">今日追踪</button>
-                <button class="tab-btn" onclick="switchView('stats')">月度分析</button>
-            </div>
-        </header>
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchView('daily')">今日打卡</button>
+            <button class="tab-btn" onclick="switchTab('week')">周度分析</button>
+            <button class="tab-btn" onclick="switchTab('month')">月度分析</button>
+        </div>
 
         <div id="inputSection">
             <div class="input-group">
-                <input type="text" id="taskInput" placeholder="刚才干了什么？（如：清理了10个骨标本）">
-                <div class="row">
+                <input type="text" id="taskInput" placeholder="记录当下的学术碎片...">
+                <div style="display:flex; gap:10px;">
                     <select id="tagSelect" style="flex:1">
                         <option value="学习">📖 学习/读文献</option>
                         <option value="写论文">✍️ 写论文/跑数据</option>
-                        <option value="上朝">🏛️ 上朝/导师见面</option>
-                        <option value="报销琐事">📑 报销/行政琐事</option>
+                        <option value="上朝">🏛️ 上朝/会议</option>
                         <option value="饮食">🥗 饮食</option>
                         <option value="LoveMoment">❤️ Love Moment</option>
-                        <option value="Social">☕ Social</option>
                         <option value="摸鱼">☕ 摸鱼/休息</option>
                     </select>
-                    <button onclick="addLog()" style="background:var(--primary); color:white; border:none; padding:10px 20px; border-radius:6px; cursor:pointer;">打卡</button>
+                    <button onclick="addLog()" style="background:var(--primary); color:white; border:none; padding:10px 20px; border-radius:6px; cursor:pointer;">记录</button>
                 </div>
             </div>
         </div>
 
         <div id="statsSection" style="display:none; text-align:center;">
+            <h3 id="statsTitle">分析报告</h3>
             <canvas id="myChart" style="max-height:250px; margin-bottom:20px;"></canvas>
         </div>
 
@@ -79,120 +84,165 @@
     </div>
 
     <div class="note-container">
-        <h3 style="margin-top:0; font-size:1.1rem;">📌 待办 & 灵感便条</h3>
-        <input type="text" id="todoInput" class="todo-input" placeholder="+ 添加一条待办，按回车保存..." onkeypress="if(event.keyCode==13) addTodo()">
-        <div id="todoList"></div>
-        <p style="font-size:0.7rem; color:#92400e; margin-top:20px; opacity:0.7;">* 点击文字标记完成，点击叉号删除</p>
+        <h3 style="margin-top:0; font-size:1.1rem;">📌 灵感便条</h3>
+        <input type="text" id="todoInput" style="width:100%; border:none; border-bottom:1px solid #ddd; background:transparent; padding:5px 0; outline:none;" placeholder="+ 按回车添加待办..." onkeypress="if(event.keyCode==13) addTodo()">
+        <div id="todoList" style="margin-top:15px;"></div>
     </div>
 </div>
 
 <script>
-    let logs = JSON.parse(localStorage.getItem('phd_logs_v3')) || [];
-    let todos = JSON.parse(localStorage.getItem('phd_todos_v3')) || [];
-    let currentView = 'daily';
-    let myChart = null;
+    let logs = JSON.parse(localStorage.getItem('phd_v4_logs')) || [];
+    let todos = JSON.parse(localStorage.getItem('phd_v4_todos')) || [];
+    let startTime = localStorage.getItem('phd_v4_start') || null;
+    let timerInterval;
 
-    // --- 打卡逻辑 ---
-    function addLog() {
-        const content = document.getElementById('taskInput').value;
-        const tag = document.getElementById('tagSelect').value;
-        if (!content) return;
+    // --- 计时器仪式感逻辑 ---
+    function startWork() {
+        startTime = Date.now();
+        localStorage.setItem('phd_v4_start', startTime);
+        updateTimerUI(true);
+        addLog("▶️ 开始了一天的科研工作", "系统记录");
+    }
+
+    function stopWork() {
+        if(!startTime) return;
+        const durationMs = Date.now() - startTime;
+        const hours = (durationMs / (1000 * 60 * 60)).toFixed(1);
+        
+        const confirmEnd = confirm(`今日科研已持续 ${hours} 小时，确定结束吗？`);
+        if(confirmEnd) {
+            addLog(`🏁 结束工作。今日总计科研时长：${hours} 小时`, "系统记录");
+            startTime = null;
+            localStorage.removeItem('phd_v4_start');
+            updateTimerUI(false);
+        }
+    }
+
+    function updateTimerUI(isRunning) {
+        const startBtn = document.getElementById('startBtn');
+        const stopBtn = document.getElementById('stopBtn');
+        const status = document.getElementById('workStatus');
+        
+        if(isRunning) {
+            startBtn.style.display = 'none';
+            stopBtn.style.display = 'inline-block';
+            status.innerText = "⚡ 正在深度科研中...";
+            timerInterval = setInterval(refreshTimer, 1000);
+        } else {
+            startBtn.style.display = 'inline-block';
+            stopBtn.style.display = 'none';
+            status.innerText = "今日工作已完成或未开始";
+            document.getElementById('timerDisplay').innerText = "00:00:00";
+            clearInterval(timerInterval);
+        }
+    }
+
+    function refreshTimer() {
+        if(!startTime) return;
+        const diff = Math.floor((Date.now() - startTime) / 1000);
+        const h = Math.floor(diff / 3600).toString().padStart(2, '0');
+        const m = Math.floor((diff % 3600) / 60).toString().padStart(2, '0');
+        const s = (diff % 60).toString().padStart(2, '0');
+        document.getElementById('timerDisplay').innerText = `${h}:${m}:${s}`;
+    }
+
+    // --- 打卡与分析逻辑 ---
+    function addLog(content, tag) {
+        const inputContent = content || document.getElementById('taskInput').value;
+        const inputTag = tag || document.getElementById('tagSelect').value;
+        if(!inputContent) return;
+        
         const now = new Date();
         logs.unshift({
             id: Date.now(),
             date: now.toISOString().split('T')[0],
             time: now.getHours().toString().padStart(2, '0') + ":" + now.getMinutes().toString().padStart(2, '0'),
             timestamp: now.getTime(),
-            content: content, tag: tag
+            content: inputContent, tag: inputTag
         });
-        localStorage.setItem('phd_logs_v3', JSON.stringify(logs));
-        document.getElementById('taskInput').value = '';
+        localStorage.setItem('phd_v4_logs', JSON.stringify(logs));
+        if(!content) document.getElementById('taskInput').value = '';
         render();
     }
 
-    // --- 便条逻辑 ---
-    function addTodo() {
-        const input = document.getElementById('todoInput');
-        if (!input.value) return;
-        todos.unshift({ id: Date.now(), text: input.value, done: false });
-        localStorage.setItem('phd_todos_v3', JSON.stringify(todos));
-        input.value = '';
-        renderTodos();
-    }
-
-    function toggleTodo(id) {
-        todos = todos.map(t => t.id === id ? {...t, done: !t.done} : t);
-        localStorage.setItem('phd_todos_v3', JSON.stringify(todos));
-        renderTodos();
-    }
-
-    function deleteTodo(id) {
-        todos = todos.filter(t => t.id !== id);
-        localStorage.setItem('phd_todos_v3', JSON.stringify(todos));
-        renderTodos();
-    }
-
-    function renderTodos() {
-        const list = document.getElementById('todoList');
-        list.innerHTML = todos.map(t => `
-            <div class="todo-item">
-                <span class="todo-text ${t.done?'done':''}" onclick="toggleTodo(${t.id})">${t.text}</span>
-                <span style="cursor:pointer; margin-left:10px; color:#92400e" onclick="deleteTodo(${t.id})">&times;</span>
-            </div>
-        `).join('');
-    }
-
-    // --- 渲染与视图控制 ---
-    function render() {
-        const listEl = document.getElementById('logList');
-        const today = new Date().toISOString().split('T')[0];
-        let displayLogs = (currentView === 'daily') ? logs.filter(l => l.date === today) : logs;
+    let myChart = null;
+    function switchTab(range) {
+        document.getElementById('inputSection').style.display = 'none';
+        document.getElementById('statsSection').style.display = 'block';
+        document.getElementById('statsTitle').innerText = range === 'week' ? "最近7天分析" : "最近30天分析";
         
-        listEl.innerHTML = displayLogs.map(log => `
-            <div class="log-item">
-                <div>
-                    <span style="color:#999; font-size:0.75rem;">${log.time}</span>
-                    <span class="tag tag-${log.tag}">${log.tag}</span>
-                    <span>${log.content}</span>
-                </div>
-                <span style="color:#eee; cursor:pointer;" onclick="deleteLog(${log.id})">&times;</span>
-            </div>
-        `).join('') || '<p style="text-align:center; color:#ccc;">今日暂无打卡</p>';
+        const days = range === 'week' ? 7 : 30;
+        const cutoff = Date.now() - days * 24 * 60 * 60 * 1000;
+        const filtered = logs.filter(l => l.timestamp > cutoff);
         
-        if(currentView === 'stats') updateChart();
-    }
-
-    function deleteLog(id) {
-        logs = logs.filter(l => l.id !== id);
-        localStorage.setItem('phd_logs_v3', JSON.stringify(logs));
-        render();
-    }
-
-    function switchView(view) {
-        currentView = view;
-        document.getElementById('inputSection').style.display = (view === 'daily' ? 'block' : 'none');
-        document.getElementById('statsSection').style.display = (view === 'stats' ? 'block' : 'none');
-        document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.innerText.includes(view==='daily'?'今日':'分析')));
-        render();
-    }
-
-    function updateChart() {
         const counts = {};
-        logs.forEach(l => counts[l.tag] = (counts[l.tag] || 0) + 1);
+        filtered.forEach(l => counts[l.tag] = (counts[l.tag] || 0) + 1);
+        
         const ctx = document.getElementById('myChart').getContext('2d');
-        if (myChart) myChart.destroy();
+        if(myChart) myChart.destroy();
         myChart = new Chart(ctx, {
             type: 'doughnut',
             data: {
                 labels: Object.keys(counts),
-                datasets: [{ data: Object.values(counts), backgroundColor: ['#3498db','#e67e22','#9b59b6','#2ecc71','#e74c3c','#1abc9c','#64748b','#94a3b8'] }]
-            },
-            options: { plugins: { legend: { position: 'bottom', labels: { boxWidth: 12 } } } }
+                datasets: [{ data: Object.values(counts), backgroundColor: ['#3498db','#e67e22','#9b59b6','#2ecc71','#e74c3c','#1abc9c','#2c3e50'] }]
+            }
         });
     }
 
-    // 初始化
-    document.getElementById('headerDate').innerText = new Date().toLocaleDateString('zh-CN', {month:'short', day:'numeric', weekday:'short'});
+    function switchView(v) {
+        document.getElementById('inputSection').style.display = 'block';
+        document.getElementById('statsSection').style.display = 'none';
+        render();
+    }
+
+    function render() {
+        const listEl = document.getElementById('logList');
+        const today = new Date().toISOString().split('T')[0];
+        const displayLogs = logs.filter(l => l.date === today);
+        listEl.innerHTML = displayLogs.map(l => `
+            <div class="log-item">
+                <div><span style="color:#999; font-size:0.7rem;">${l.time}</span><span class="tag tag-${l.tag}">${l.tag}</span><span>${l.content}</span></div>
+                <span onclick="deleteLog(${l.id})" style="color:#eee; cursor:pointer;">&times;</span>
+            </div>
+        `).join('') || '<p style="color:#ccc; text-align:center;">今日尚无记录</p>';
+    }
+
+    function deleteLog(id) {
+        logs = logs.filter(l => l.id !== id);
+        localStorage.setItem('phd_v4_logs', JSON.stringify(logs));
+        render();
+    }
+
+    // --- 便条 ---
+    function addTodo() {
+        const val = document.getElementById('todoInput').value;
+        if(!val) return;
+        todos.unshift({id: Date.now(), text: val, done: false});
+        localStorage.setItem('phd_v4_todos', JSON.stringify(todos));
+        document.getElementById('todoInput').value = '';
+        renderTodos();
+    }
+    function renderTodos() {
+        document.getElementById('todoList').innerHTML = todos.map(t => `
+            <div class="todo-item">
+                <span class="${t.done?'done':''}" onclick="toggleTodo(${t.id})" style="cursor:pointer;flex:1">${t.text}</span>
+                <span onclick="deleteTodo(${t.id})" style="color:#92400e; cursor:pointer;">&times;</span>
+            </div>
+        `).join('');
+    }
+    function toggleTodo(id) {
+        todos = todos.map(t => t.id === id ? {...t, done: !t.done} : t);
+        localStorage.setItem('phd_v4_todos', JSON.stringify(todos));
+        renderTodos();
+    }
+    function deleteTodo(id) {
+        todos = todos.filter(t => t.id !== id);
+        localStorage.setItem('phd_v4_todos', JSON.stringify(todos));
+        renderTodos();
+    }
+
+    // 页面加载检查是否正在计时
+    if(startTime) updateTimerUI(true);
     render();
     renderTodos();
 </script>
