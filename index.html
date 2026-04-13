@@ -3,51 +3,48 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PhD Life OS v5.2 | 历法索引与视觉增强</title>
+    <title>My Life OS v5.3 </title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root { --primary: #2c3e50; --bg: #f4f7f9; --accent: #3498db; --note: #fef9c3; --success: #27ae60; --danger: #e74c3c; --active: #e67e22; --pause: #f1c40f; }
         body { font-family: 'PingFang SC', system-ui, sans-serif; background: var(--bg); margin: 0; padding: 20px; color: #333; }
         .main-layout { display: flex; max-width: 1200px; margin: 0 auto; gap: 20px; flex-wrap: wrap; }
         
-        /* 顶部总计时 */
         .timer-card { width: 100%; background: linear-gradient(135deg, #2c3e50, #34495e); color: white; padding: 25px; border-radius: 20px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.1); margin-bottom: 20px; }
         .timer-display { font-size: 3.5rem; font-family: 'Courier New', Courier, monospace; margin: 15px 0; font-weight: bold; color: #f1c40f; text-shadow: 0 0 15px rgba(241, 196, 15, 0.3); }
         
         .log-container { flex: 2; min-width: 350px; background: white; padding: 25px; border-radius: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
         .note-container { flex: 1; min-width: 300px; }
         
-        .task-timer-box { background: #fff; border: 2px solid var(--accent); padding: 20px; border-radius: 12px; margin-bottom: 20px; position: relative; }
+        .task-timer-box { background: #fff; border: 2px solid var(--accent); padding: 20px; border-radius: 12px; margin-bottom: 20px; }
         .task-active { border-color: var(--active); background: #fffcf9; animation: pulse 2s infinite; }
         @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(230, 126, 34, 0.4); } 70% { box-shadow: 0 0 0 10px rgba(230, 126, 34, 0); } 100% { box-shadow: 0 0 0 0 rgba(230, 126, 34, 0); } }
 
-        .tag-badge { display: inline-block; padding: 4px 10px; background: #edf2f7; border-radius: 15px; margin: 3px; font-size: 12px; cursor: pointer; transition: 0.2s; }
-        .tag-badge:hover { background: #fee2e2; color: #dc2626; }
-
+        .tag-badge { display: inline-block; padding: 4px 10px; background: #edf2f7; border-radius: 15px; margin: 3px; font-size: 12px; cursor: pointer; }
         .log-item { padding: 15px 0; border-bottom: 1px solid #f0f0f0; }
-        .log-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; }
+        .log-header { display: flex; justify-content: space-between; align-items: center; }
         .duration-tag { background: #34495e; color: white; padding: 2px 8px; border-radius: 4px; font-size: 11px; }
         
-        .btn { padding: 10px 22px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; transition: 0.2s; font-size: 0.9rem; }
-        .btn-pause { background: var(--pause); color: #2c3e50; }
-        .btn-finish { background: var(--danger); color: white; }
-        
+        .btn { padding: 10px 22px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 0.9rem; }
         .tab-nav { display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 1px solid #eee; align-items: center; }
-        .tab-btn { padding: 10px 5px; background: none; border: none; cursor: pointer; color: #999; font-size: 0.9rem; }
+        .tab-btn { padding: 10px 5px; background: none; border: none; cursor: pointer; color: #999; }
         .tab-btn.active { color: var(--accent); border-bottom: 2px solid var(--accent); font-weight: bold; }
-        
-        input[type="date"] { border: 1px solid #ddd; border-radius: 6px; padding: 5px; font-family: inherit; font-size: 0.8rem; }
+
+        /* DDL 样式 */
+        .ddl-tag { font-size: 10px; padding: 1px 5px; border-radius: 4px; margin-left: 5px; font-weight: normal; }
+        .ddl-future { background: #dcfce7; color: #166534; }
+        .ddl-warning { background: #fee2e2; color: #991b1b; border: 1px solid #f87171; }
     </style>
 </head>
 <body>
 
 <div class="main-layout">
     <div class="timer-card">
-        <div style="font-size: 1.1rem; letter-spacing: 3px; opacity: 0.9;">🌍今天你地球Online了吗？🌍</div>
+        <div style="font-size: 1.1rem; letter-spacing: 3px; opacity: 0.9;">🌏今天你地球Online了吗🌏</div>
         <div id="totalTimer" class="timer-display">00:00:00</div>
-        <div id="timerControls" style="display:flex; justify-content:center; gap:12px;">
-            <button id="dayMainBtn" class="btn" style="background:var(--success); color:white;" onclick="handleDayMain()">来啦😉Lisa些干！</button>
-            <button id="dayFinishBtn" class="btn btn-finish" style="display:none;" onclick="finishDayWork()">See U Tomorrow!💗</button>
+        <div style="display:flex; justify-content:center; gap:12px;">
+            <button id="dayMainBtn" class="btn" style="background:var(--success); color:white;" onclick="handleDayMain()">开启</button>
+            <button id="dayFinishBtn" class="btn" style="background:var(--danger); color:white; display:none;" onclick="finishDayWork()">See U Tomorrow!🥳</button>
         </div>
         <div id="dayStatus" style="margin-top:12px; font-size:0.85rem; color:#bdc3c7;">尚未开启</div>
     </div>
@@ -58,8 +55,7 @@
             <button class="tab-btn" onclick="switchTab('week')">周度分析</button>
             <button class="tab-btn" onclick="switchTab('month')">月度分析</button>
             <div style="margin-left: auto; display: flex; align-items: center; gap: 5px;">
-                <span style="font-size: 12px; color: #666;">📅 查阅：</span>
-                <input type="date" id="datePicker" onchange="jumpToDate()">
+                <input type="date" id="datePicker" onchange="jumpToDate()" style="font-size:12px; border:1px solid #ddd; border-radius:4px;">
             </div>
         </div>
 
@@ -91,9 +87,16 @@
         </div>
 
         <div style="background:var(--note); padding:20px; border-radius:16px; box-shadow:2px 5px 15px rgba(0,0,0,0.05);">
-            <h3 style="margin:0 0 12px 0; font-size:1rem;">📌 待办便条</h3>
-            <input type="text" id="todoInput" placeholder="+ 回车添加..." onkeypress="if(event.keyCode==13) addTodo()" style="width:100%; border:none; border-bottom:1px solid #ccc; background:transparent; padding:6px 0; outline:none;">
-            <div id="todoList" style="margin-top:12px;"></div>
+            <h3 style="margin:0 0 12px 0; font-size:1rem;">📌 待办便条 (带DDL)</h3>
+            <div style="display:flex; flex-direction:column; gap:8px;">
+                <input type="text" id="todoInput" placeholder="要做什么？" style="width:100%; border:none; border-bottom:1px solid #ccc; background:transparent; padding:6px 0; outline:none;">
+                <div style="display:flex; align-items:center; gap:5px;">
+                    <span style="font-size:12px; color:#666;">截止:</span>
+                    <input type="date" id="todoDeadline" style="border:none; background:rgba(255,255,255,0.5); font-size:12px; border-radius:4px; padding:2px;">
+                    <button onclick="addTodo()" style="margin-left:auto; padding:4px 12px; background:var(--primary); color:white; border:none; border-radius:6px; cursor:pointer; font-size:12px;">添加</button>
+                </div>
+            </div>
+            <div id="todoList" style="margin-top:15px;"></div>
         </div>
     </div>
 </div>
@@ -110,37 +113,26 @@
     let dayInterval, taskInterval, myChart;
 
     function init() {
-        renderTags();
-        renderLogs();
-        renderTodos();
-        refreshDayUI();
+        renderTags(); renderLogs(); renderTodos(); refreshDayUI();
         document.getElementById('datePicker').value = new Date().toISOString().split('T')[0];
         if (dayState === 'running') startDayTimer();
         if (activeTask) resumeTask();
     }
 
-    // --- 日历跳转逻辑 ---
     function jumpToDate() {
         const selectedDate = document.getElementById('datePicker').value;
-        if (selectedDate) {
-            switchTab('task');
-            renderLogs(selectedDate);
-        }
+        if (selectedDate) { switchTab('task'); renderLogs(selectedDate); }
     }
 
-    // --- 全天计时核心 ---
     function handleDayMain() {
         if (dayState === 'idle' || dayState === 'paused') {
-            dayStartTime = Date.now();
-            dayState = 'running';
+            dayStartTime = Date.now(); dayState = 'running';
             localStorage.setItem('phd_v51_day_start', dayStartTime);
             localStorage.setItem('phd_v51_day_state', 'running');
             startDayTimer();
         } else if (dayState === 'running') {
             dayTotalSec += Math.floor((Date.now() - dayStartTime) / 1000);
-            dayState = 'paused';
-            dayStartTime = null;
-            clearInterval(dayInterval);
+            dayState = 'paused'; dayStartTime = null; clearInterval(dayInterval);
             localStorage.setItem('phd_v51_day_total', dayTotalSec);
             localStorage.removeItem('phd_v51_day_start');
             localStorage.setItem('phd_v51_day_state', 'paused');
@@ -159,37 +151,32 @@
     function refreshDayUI() {
         const mainBtn = document.getElementById('dayMainBtn');
         const finishBtn = document.getElementById('dayFinishBtn');
-        const status = document.getElementById('dayStatus');
         if (dayState === 'running') {
-            mainBtn.innerText = "⏸ 暂停一下"; mainBtn.className = "btn btn-pause";
-            finishBtn.style.display = 'inline-block'; status.innerText = "🚀 Doing...";
+            mainBtn.innerText = "⏸ 暂停科研"; mainBtn.style.background = "var(--pause)";
+            finishBtn.style.display = 'inline-block';
         } else if (dayState === 'paused') {
-            mainBtn.innerText = "▶ 继续😋"; mainBtn.className = "btn"; mainBtn.style.background = "var(--success)";
-            finishBtn.style.display = 'inline-block'; status.innerText = "☕ 已暂停（存档中）";
-            document.getElementById('totalTimer').innerText = formatHMS(dayTotalSec);
+            mainBtn.innerText = "▶ 继续科研"; mainBtn.style.background = "var(--success)";
+            finishBtn.style.display = 'inline-block';
         } else {
-            mainBtn.innerText = "开启"; mainBtn.className = "btn"; mainBtn.style.background = "var(--success)";
-            finishBtn.style.display = 'none'; status.innerText = "尚未开启";
-            document.getElementById('totalTimer').innerText = "00:00:00";
+            mainBtn.innerText = "开启科研模式"; mainBtn.style.background = "var(--success)";
+            finishBtn.style.display = 'none'; document.getElementById('totalTimer').innerText = "00:00:00";
         }
     }
 
     function finishDayWork() {
         if(!confirm("确定结算今日工作吗？")) return;
         if(dayState === 'running') dayTotalSec += Math.floor((Date.now() - dayStartTime) / 1000);
-        alert(`今日累计科研净时长：${formatHMS(dayTotalSec)}`);
+        alert(`今日累计净时长：${formatHMS(dayTotalSec)}`);
         dayTotalSec = 0; dayStartTime = null; dayState = 'idle';
         clearInterval(dayInterval);
         localStorage.removeItem('phd_v51_day_total'); localStorage.removeItem('phd_v51_day_start');
-        localStorage.setItem('phd_v51_day_state', 'idle');
-        refreshDayUI();
+        localStorage.setItem('phd_v51_day_state', 'idle'); refreshDayUI();
     }
 
-    // --- 任务计时核心 ---
     function toggleTask() {
         if (!activeTask) {
             const name = document.getElementById('taskNameInput').value;
-            if(!name) return alert("记录点什么吧");
+            if(!name) return alert("写点什么吧");
             activeTask = { name, tag: document.getElementById('taskTagSelect').value, start: Date.now() };
             localStorage.setItem('phd_v51_active_task', JSON.stringify(activeTask));
             resumeTask();
@@ -206,8 +193,7 @@
             document.getElementById('taskBox').classList.remove('task-active');
             document.getElementById('taskTimeDisplay').style.display = 'none';
             document.getElementById('taskBtn').innerText = "开始此项任务";
-            document.getElementById('taskNameInput').value = '';
-            renderLogs();
+            document.getElementById('taskNameInput').value = ''; renderLogs();
         }
     }
 
@@ -222,20 +208,47 @@
         }, 1000);
     }
 
-    // --- 渲染逻辑 ---
+    // --- 待办事项增强逻辑 ---
+    function renderTodos() {
+        document.getElementById('todoList').innerHTML = todos.map(t => {
+            let ddlHtml = "";
+            if (t.deadline) {
+                const diff = Math.ceil((new Date(t.deadline) - new Date().setHours(0,0,0,0)) / 86400000);
+                const ddlClass = diff < 0 ? 'ddl-warning' : 'ddl-future';
+                const ddlText = diff < 0 ? `过期 ${Math.abs(diff)}天` : (diff === 0 ? "今天截点" : `剩 ${diff}天`);
+                ddlHtml = `<span class="ddl-tag ${ddlClass}">${ddlText}</span>`;
+            }
+            return `
+                <div style="display:flex; flex-direction:column; padding:10px 0; border-bottom:1px dashed #eee; font-size:0.9rem;">
+                    <div style="display:flex; justify-content:space-between;">
+                        <span style="${t.done?'text-decoration:line-through;color:#999':''}; cursor:pointer;" onclick="toggleTodo(${t.id})">
+                            ${t.done?'✅':'⬜'} ${t.text} ${ddlHtml}
+                        </span>
+                        <span onclick="deleteTodo(${t.id})" style="cursor:pointer; color:#92400e; font-weight:bold;">&times;</span>
+                    </div>
+                </div>
+            `;
+        }).join('');
+    }
+
+    function addTodo() {
+        const text = document.getElementById('todoInput').value;
+        const ddl = document.getElementById('todoDeadline').value;
+        if(text) {
+            todos.unshift({id: Date.now(), text: text, deadline: ddl, done: false});
+            localStorage.setItem('phd_v51_todos', JSON.stringify(todos));
+            document.getElementById('todoInput').value = '';
+            document.getElementById('todoDeadline').value = '';
+            renderTodos();
+        }
+    }
+
     function renderLogs(targetDate = null) {
         const displayDate = targetDate || new Date().toISOString().split('T')[0];
         const filtered = logs.filter(l => l.date === displayDate);
-        const title = targetDate === new Date().toISOString().split('T')[0] ? "今日任务段" : `${targetDate} 记录`;
-        
         document.getElementById('logList').innerHTML = `
-            <div style="padding:10px 0; border-bottom:2px solid var(--accent); margin-bottom:10px; font-weight:bold; font-size:0.9rem; color:var(--primary);">📌 ${title}</div>
-        ` + (filtered.map(l => `
-            <div class="log-item">
-                <div class="log-header"><span style="font-weight:bold;">${l.name}</span><span class="duration-tag">${l.duration} min</span></div>
-                <div style="font-size:0.8rem; color:#888;">[${l.tag}] | ${l.timeRange} <span onclick="deleteLog(${l.id})" style="float:right; cursor:pointer;">&times;</span></div>
-            </div>
-        `).join('') || '<p style="text-align:center; color:#ccc; margin-top:20px;">暂无数据</p>');
+            <div style="padding:10px 0; border-bottom:2px solid var(--accent); margin-bottom:10px; font-weight:bold; font-size:0.9rem; color:var(--primary);">📌 ${targetDate||'今日'} 记录</div>
+        ` + (filtered.map(l => `<div class="log-item"><div class="log-header"><span style="font-weight:bold;">${l.name}</span><span class="duration-tag">${l.duration} min</span></div><div style="font-size:0.8rem; color:#888;">[${l.tag}] | ${l.timeRange} <span onclick="deleteLog(${l.id})" style="float:right; cursor:pointer;">&times;</span></div></div>`).join('') || '<p style="text-align:center; color:#ccc; margin-top:20px;">无数据</p>');
     }
 
     function renderChart(days) {
@@ -243,14 +256,9 @@
         logs.filter(l => l.timestamp > (Date.now() - days*86400000)).forEach(l => dataMap[l.tag] = (dataMap[l.tag] || 0) + l.duration);
         const ctx = document.getElementById('myChart').getContext('2d');
         if(myChart) myChart.destroy();
-        myChart = new Chart(ctx, { 
-            type: 'doughnut', 
-            data: { labels: Object.keys(dataMap), datasets: [{ data: Object.values(dataMap), backgroundColor: ['#3498db','#e67e22','#9b59b6','#2ecc71','#e74c3c','#1abc9c','#f1c40f'] }] },
-            options: { plugins: { legend: { position: 'bottom' }, title: { display:true, text:`过去 ${days} 天产出占比` } }, cutout: '60%' }
-        });
+        myChart = new Chart(ctx, { type: 'doughnut', data: { labels: Object.keys(dataMap), datasets: [{ data: Object.values(dataMap), backgroundColor: ['#3498db','#e67e22','#9b59b6','#2ecc71','#e74c3c','#1abc9c','#f1c40f'] }] }, options: { plugins: { legend: { position:'bottom' } }, cutout:'60%' } });
     }
 
-    // --- 基础工具 ---
     function switchTab(type) {
         document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
         event.target.classList.add('active');
@@ -262,10 +270,7 @@
         document.getElementById('tagList').innerHTML = tags.map(t => `<span class="tag-badge" onclick="removeTag('${t}')">${t}</span>`).join('');
         document.getElementById('taskTagSelect').innerHTML = tags.map(t => `<option value="${t}">${t}</option>`).join('');
     }
-    function addNewTag() {
-        const v = document.getElementById('newTagInput').value.trim();
-        if(v && !tags.includes(v)) { tags.push(v); localStorage.setItem('phd_v51_tags', JSON.stringify(tags)); renderTags(); document.getElementById('newTagInput').value=''; }
-    }
+    function addNewTag() { const v = document.getElementById('newTagInput').value.trim(); if(v && !tags.includes(v)) { tags.push(v); localStorage.setItem('phd_v51_tags', JSON.stringify(tags)); renderTags(); document.getElementById('newTagInput').value=''; } }
     function removeTag(t) { if(confirm(`删除标签 ${t}？`)) { tags = tags.filter(x=>x!==t); localStorage.setItem('phd_v51_tags', JSON.stringify(tags)); renderTags(); } }
     function deleteLog(id) { if(confirm("删除记录？")) { logs = logs.filter(l=>l.id!==id); localStorage.setItem('phd_v51_logs', JSON.stringify(logs)); renderLogs(); } }
     function formatHMS(sec) {
@@ -274,8 +279,6 @@
         const s = (sec % 60).toString().padStart(2, '0');
         return `${h}:${m}:${s}`;
     }
-    function renderTodos() { document.getElementById('todoList').innerHTML = todos.map(t => `<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px dashed #eee;font-size:0.9rem;"><span style="${t.done?'text-decoration:line-through;color:#999':''}" onclick="toggleTodo(${t.id})">${t.text}</span><span onclick="deleteTodo(${t.id})" style="cursor:pointer;color:#92400e;">&times;</span></div>`).join(''); }
-    function addTodo() { const v = document.getElementById('todoInput').value; if(v){ todos.unshift({id:Date.now(),text:v,done:false}); localStorage.setItem('phd_v51_todos',JSON.stringify(todos)); document.getElementById('todoInput').value=''; renderTodos(); } }
     function toggleTodo(id) { todos = todos.map(t=>t.id===id?{...t,done:!t.done}:t); localStorage.setItem('phd_v51_todos',JSON.stringify(todos)); renderTodos(); }
     function deleteTodo(id) { todos = todos.filter(t=>t.id!==id); localStorage.setItem('phd_v51_todos',JSON.stringify(todos)); renderTodos(); }
 
